@@ -39,6 +39,16 @@ export class LoginComponent {
     readonly themeService: ThemeService
   ) {}
 
+  fillAdmin() {
+    this.email = 'admin@fitportal.com';
+    this.password = 'admin123';
+  }
+
+  fillUser() {
+    this.email = 'user@fitportal.com';
+    this.password = 'user123';
+  }
+
   onLogin() {
     if (!this.email || !this.password) {
       this.messageService.add({

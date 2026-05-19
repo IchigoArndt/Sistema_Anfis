@@ -18,7 +18,26 @@ class _loginPage extends State<LoginPage> {
   String password = "";
   bool _isLoading = false;
 
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   final IAuthenticationService _authService = sl<IAuthenticationService>();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _fillCredentials(String email, String pass) {
+    setState(() {
+      username = email;
+      password = pass;
+      _emailController.text = email;
+      _passwordController.text = pass;
+    });
+  }
 
   void authenticateUser() async {
     if (username.trim().isEmpty || password.trim().isEmpty) {
@@ -105,7 +124,9 @@ class _loginPage extends State<LoginPage> {
                     _buildLogo(),
                     const SizedBox(height: 40),
                     _buildLoginCard(),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+                    _buildDemoHint(),
+                    const SizedBox(height: 16),
                     _buildRegisterLink(),
                     const SizedBox(height: 40),
                   ],
@@ -217,6 +238,7 @@ class _loginPage extends State<LoginPage> {
             ),
             const SizedBox(height: 6),
             TextField(
+              controller: _emailController,
               onChanged: (value) => setState(() => username = value),
               keyboardType: TextInputType.emailAddress,
               enabled: !_isLoading,
@@ -233,6 +255,7 @@ class _loginPage extends State<LoginPage> {
             ),
             const SizedBox(height: 6),
             TextField(
+              controller: _passwordController,
               onChanged: (value) => setState(() => password = value),
               decoration: StyleInputs.getStyle("••••••••"),
               obscureText: true,
@@ -282,6 +305,101 @@ class _loginPage extends State<LoginPage> {
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDemoHint() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.07),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white24, width: 1),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'ACESSO DE DEMONSTRAÇÃO',
+              style: TextStyle(
+                color: Color(0xFF90A4AE),
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildDemoTile(
+              label: 'Admin',
+              labelColor: const Color(0xFFFDD835),
+              labelBg: const Color(0xFF3E3000),
+              email: 'admin@anfis.com',
+              pass: 'admin123',
+            ),
+            const SizedBox(height: 6),
+            _buildDemoTile(
+              label: 'User',
+              labelColor: const Color(0xFF64B5F6),
+              labelBg: const Color(0xFF0D2137),
+              email: 'user@anfis.com',
+              pass: 'user123',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDemoTile({
+    required String label,
+    required Color labelColor,
+    required Color labelBg,
+    required String email,
+    required String pass,
+  }) {
+    return GestureDetector(
+      onTap: _isLoading ? null : () => _fillCredentials(email, pass),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+              decoration: BoxDecoration(
+                color: labelBg,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: labelColor,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '$email  /  $pass',
+                style: const TextStyle(
+                  color: Color(0xFFCFD8DC),
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            const Icon(Icons.touch_app, color: Color(0xFF546E7A), size: 15),
           ],
         ),
       ),

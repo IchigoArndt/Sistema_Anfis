@@ -1,37 +1,42 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { delay } from 'rxjs/operators';
 
 const TOKEN_KEY = 'token';
+
+// Credenciais fake para desenvolvimento — remover ao integrar o backend real
+const FAKE_USERS: Record<string, { name: string; role: string; password: string }> = {
+  'admin@fitportal.com': { name: 'Admin FitPortal', role: 'Admin', password: 'admin123' },
+  'user@fitportal.com':  { name: 'Usuário FitPortal', role: 'User',  password: 'user123'  },
+};
+
+function buildFakeToken(email: string, name: string, role: string): string {
+  const header  = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
+  const payload = btoa(JSON.stringify({ sub: email, name, email, role, exp: 9999999999 }));
+  return `${header}.${payload}.fake`;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private _isAuthenticated = false;
   private _token: string | null = null;
 
-  constructor(
-    private readonly http: HttpClient,
-    private readonly router: Router
-  ) {}
+  constructor(private readonly router: Router) {}
 
   login(email: string, password: string): Observable<boolean> {
-    // TODO: substituir pela URL real da API de auth
-    const loginUrl = 'http://localhost:5000/auth/login'; // Ajustar conforme necessário
+    const user = FAKE_USERS[email.toLowerCase()];
+    const success = !!user && user.password === password;
 
-    return this.http.post<{ token: string }>(loginUrl, { email, password }).pipe(
-      map(response => {
-        this._isAuthenticated = true;
-        this._token = response.token;
-        this.setToken(response.token);
-        return true;
-      }),
-      catchError(() => {
-        this.clearAuthState();
-        return of(false);
-      })
-    );
+    if (success) {
+      const token = buildFakeToken(email, user.name, user.role);
+      this._isAuthenticated = true;
+      this._token = token;
+      this.setToken(token);
+    }
+
+    // Simula latência de rede (800 ms) para o spinner aparecer
+    return of(success).pipe(delay(800));
   }
 
   logout(): void {

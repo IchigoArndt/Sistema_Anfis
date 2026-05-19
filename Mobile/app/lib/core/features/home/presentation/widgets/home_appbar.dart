@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sistema_distribuido/core/shared/di/service_locator.dart';
+import 'package:sistema_distribuido/core/shared/storage/token_storage.dart';
 
 class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
 
@@ -19,11 +21,16 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
             child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
           ),
           TextButton(
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/login',
-              (route) => false,
-            ),
+            onPressed: () async {
+              await sl<TokenStorage>().clearToken();
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/login',
+                  (route) => false,
+                );
+              }
+            },
             child: const Text('Sair', style: TextStyle(color: Color(0xFFD32F2F), fontWeight: FontWeight.bold)),
           ),
         ],

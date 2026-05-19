@@ -184,6 +184,61 @@
   width: 100%;
 }
 
+/* ── Dev hint ─────────────────────────────── */
+.dev-hint {
+  margin-top: 1.25rem;
+  border: 1px dashed var(--surface-border);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  background: var(--surface-ground);
+
+  > p {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.6rem;
+  }
+}
+
+.dev-hint-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text-color-secondary);
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--surface-hover);
+    color: var(--text-color);
+  }
+}
+
+.dev-hint-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+
+  &.admin {
+    background: #fde68a;
+    color: #92400e;
+  }
+
+  &.user {
+    background: #bfdbfe;
+    color: #1e40af;
+  }
+}
+
 .theme-toggle-floating {
   position: fixed;
   top: 1.25rem;
