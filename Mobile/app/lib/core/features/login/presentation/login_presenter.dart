@@ -269,7 +269,16 @@ class _loginPage extends State<LoginPage> {
             const SizedBox(height: 16),
             Center(
               child: TextButton(
-                onPressed: _isLoading ? null : () {},
+                onPressed: _isLoading
+                    ? null
+                    : () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'Recuperação de senha disponível em breve.'),
+                          ),
+                        );
+                      },
                 child: const Text(
                   "Esqueceu sua senha?",
                   style: TextStyle(
@@ -295,7 +304,14 @@ class _loginPage extends State<LoginPage> {
           style: TextStyle(color: Color(0xFFB0BEC5), fontSize: 14),
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                    'Cadastro de alunos realizado pelo profissional responsável.'),
+              ),
+            );
+          },
           child: const Text(
             "Cadastre-se",
             style: TextStyle(

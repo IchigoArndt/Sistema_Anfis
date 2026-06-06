@@ -30,10 +30,10 @@ export class DashboardComponent implements OnInit {
   recentAvaliacoes: Avaliacao[] = [];
 
   chartData = {
-    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
     datasets: [{
       label: 'Avaliações realizadas',
-      data: [4, 6, 8, 5, 9, 7],
+      data: new Array(12).fill(0),
       backgroundColor: 'rgba(99, 102, 241, 0.2)',
       borderColor: 'rgba(99, 102, 241, 1)',
       borderWidth: 2,
@@ -59,6 +59,7 @@ export class DashboardComponent implements OnInit {
     }).subscribe(({ alunos, avaliacoes }) => {
       this.buildStats(alunos, avaliacoes);
       this.recentAvaliacoes = avaliacoes.slice(0, 4);
+      this.buildChart(avaliacoes);
     });
   }
 
@@ -75,6 +76,21 @@ export class DashboardComponent implements OnInit {
       { label: 'Avaliações pendentes',  value: String(avaliacoes.filter(a => a.status === 'Pendente').length), icon: 'pi pi-clock',     color: 'orange' },
       { label: 'Alunos ativos',         value: String(alunos.filter(a => a.status === 'Ativo').length),        icon: 'pi pi-check',     color: 'purple' },
     ];
+  }
+
+  private buildChart(avaliacoes: Avaliacao[]): void {
+    const counts = new Array(12).fill(0);
+    avaliacoes.forEach(a => {
+      const parts = a.data.split('/');
+      if (parts.length >= 2) {
+        const monthIndex = parseInt(parts[1], 10) - 1;
+        if (monthIndex >= 0 && monthIndex < 12) counts[monthIndex]++;
+      }
+    });
+    this.chartData = {
+      ...this.chartData,
+      datasets: [{ ...this.chartData.datasets[0], data: counts }]
+    };
   }
 
   getAvatar(nome: string): string {

@@ -6,7 +6,8 @@ namespace SD_Server.Domain.Enum
 {
     public enum StatusAssessmentEnum
     {
-        Completed = 1, 
-        Pending = 2
+        Completed = 1,
+        Pending   = 2,
+        Cancelled = 3
     }
 }

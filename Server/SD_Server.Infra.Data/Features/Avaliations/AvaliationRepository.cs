@@ -41,7 +41,7 @@ public class AvaliationRepository(SdServerDbContext context, ILogger<AvaliationR
                 return new KeyNotFoundException($"Avaliação {entity.Id} não encontrada.");
             }
 
-            avaliation.Status = StatusAssessmentEnum.Completed;
+            avaliation.Status = StatusAssessmentEnum.Cancelled;
             await context.SaveChangesAsync();
 
             logger.LogInformation("Avaliação Id: {Id} inativada com sucesso.", entity.Id);

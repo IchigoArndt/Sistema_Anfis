@@ -39,7 +39,7 @@ namespace SD_Server.Api.Controllers.Avaliation
         }
 
         [HttpPost("Create")]
-        //[Authorize(Roles = "Professional")]
+        [Authorize(Roles = "Professional")]
         public async Task<IActionResult> Create([FromBody] AvaliationCreateCommand request)
         {
             var result = await mediator.Send(request);

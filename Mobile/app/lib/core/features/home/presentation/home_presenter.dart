@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:sistema_distribuido/core/features/home/domain/entities/Avaliation.dart';
+import 'package:sistema_distribuido/core/features/avaliacoes/data/models/assessment_model.dart';
+import 'package:sistema_distribuido/core/features/home/data/services/home_service.dart';
+import 'package:sistema_distribuido/core/shared/di/service_locator.dart';
 import 'package:sistema_distribuido/core/features/home/presentation/widgets/home_appbar.dart';
 import 'package:sistema_distribuido/core/features/home/presentation/widgets/home_welcome_card.dart';
 import 'package:sistema_distribuido/core/features/home/presentation/widgets/HomeMetricsRow.dart';
 import 'package:sistema_distribuido/core/features/home/presentation/widgets/HomeQuickActions.dart';
-import 'package:sistema_distribuido/core/features/home/presentation/widgets/HomeNextEvaluation.dart';
+import 'package:sistema_distribuido/core/features/home/presentation/widgets/HomeNextEvaluationFromAssessment.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,14 +17,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
+  final HomeService _homeService = sl<HomeService>();
 
-  // Dados mock — futuramente virão de uma API
-  final Avaliation _proximaAvaliacao = Avaliation(
-    Professional: 'Dr. Carlos Mendes',
-    Data: DateTime(2026,04,25),
-    Type: 'Bioimpedância + Avaliação Postural',
-    Price: 150,
-  );
+  late Future<({AssessmentModel? proxima, double? weight, double? imc})>
+      _homeFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _homeFuture = _loadHomeData();
+  }
+
+  Future<({AssessmentModel? proxima, double? weight, double? imc})>
+      _loadHomeData() async {
+    final proxima = await _homeService.getProximaAvaliacao();
+    final metrics = await _homeService.getLastMetrics();
+    return (proxima: proxima, weight: metrics.weight, imc: metrics.imc);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,19 +43,40 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: const HomeAppbar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            HomeWelcomeCard(username: username),
-            const SizedBox(height: 16),
-            const Homemetricsrow(Imc: 25.6,WeightPeople: 78.5),
-            const SizedBox(height: 24),
-            const HomeQuickActions(),
-            const SizedBox(height: 24),
-            HomeNextEvaluation(avaliation: _proximaAvaliacao),
-            const SizedBox(height: 24),
-          ],
-        ),
+      body: FutureBuilder(
+        future: _homeFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final data = snapshot.data;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                HomeWelcomeCard(username: username),
+                const SizedBox(height: 16),
+                Homemetricsrow(
+                  Imc: data?.imc ?? 0.0,
+                  WeightPeople: data?.weight ?? 0.0,
+                ),
+                const SizedBox(height: 24),
+                const HomeQuickActions(),
+                const SizedBox(height: 24),
+                if (data?.proxima != null)
+                  HomeNextEvaluationFromAssessment(assessment: data!.proxima!)
+                else
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'Nenhuma avaliação pendente.',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -69,7 +101,8 @@ class _HomePageState extends State<HomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Início'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Profissionais'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Avaliações'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_month), label: 'Avaliações'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),

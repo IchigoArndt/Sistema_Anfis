@@ -1,12 +1,15 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sistema_distribuido/core/features/avaliacoes/data/repositories/avaliacoes_repository_impl.dart';
 import 'package:sistema_distribuido/core/features/avaliacoes/data/services/avaliacoes_service.dart';
 import 'package:sistema_distribuido/core/features/avaliacoes/domain/services/IAvaliacoesService.dart';
+import 'package:sistema_distribuido/core/features/home/data/services/home_service.dart';
 import 'package:sistema_distribuido/core/features/login/data/repositories/auth_repository_impl.dart';
 import 'package:sistema_distribuido/core/features/login/data/services/auth_service.dart';
 import 'package:sistema_distribuido/core/features/login/domain/services/IUserAuthenticationSerivce.dart';
+import 'package:sistema_distribuido/core/features/login/domain/usecases/logout_usecase.dart';
 import 'package:sistema_distribuido/core/features/perfil/data/repositories/perfil_repository_impl.dart';
 import 'package:sistema_distribuido/core/features/perfil/data/services/perfil_service.dart';
 import 'package:sistema_distribuido/core/features/perfil/domain/services/IPerfilService.dart';
@@ -19,7 +22,7 @@ import 'package:sistema_distribuido/core/shared/storage/token_storage.dart';
 
 final sl = GetIt.instance;
 
-Future<void> setupServiceLocator() async {
+Future<void> setupServiceLocator(GlobalKey<NavigatorState> navigatorKey) async {
   sl.registerLazySingleton<FlutterSecureStorage>(
     () => const FlutterSecureStorage(),
   );
@@ -29,7 +32,7 @@ Future<void> setupServiceLocator() async {
   );
 
   sl.registerLazySingleton<AuthInterceptor>(
-    () => AuthInterceptor(sl<TokenStorage>()),
+    () => AuthInterceptor(sl<TokenStorage>(), navigatorKey),
   );
 
   sl.registerLazySingleton<AuthService>(
@@ -69,5 +72,13 @@ Future<void> setupServiceLocator() async {
 
   sl.registerLazySingleton<IPerfilService>(
     () => PerfilRepositoryImpl(sl<PerfilService>()),
+  );
+
+  sl.registerLazySingleton<HomeService>(
+    () => HomeService(sl<AvaliacoesService>(), sl<PerfilService>()),
+  );
+
+  sl.registerLazySingleton<LogoutUseCase>(
+    () => LogoutUseCase(sl<TokenStorage>()),
   );
 }

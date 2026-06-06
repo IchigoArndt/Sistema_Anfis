@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using SD_Api_Base.Base;
 using SD_Server.Application.Features.Professionals.Commands;
 using SD_Server.Application.Features.Professionals.Commands.Create;
+using SD_Server.Application.Features.Professionals.Commands.Delete;
+using SD_Server.Application.Features.Professionals.Commands.Update;
 
 namespace SD_Server.Api.Controllers.Professional
 {
@@ -40,6 +42,24 @@ namespace SD_Server.Api.Controllers.Professional
         public async Task<IActionResult> GetById(int id)
         {
             var command = new GetProfessionalByIdCommand { Id = id };
+            var result = await mediator.Send(command);
+            return HandleCommand(result);
+        }
+
+        [HttpPut("Update/{id}")]
+        [Authorize(Roles = "Admin,Professional")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProfessionalCommand command)
+        {
+            command.Id = id;
+            var result = await mediator.Send(command);
+            return HandleCommand(result);
+        }
+
+        [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var command = new DeleteProfessionalCommand { Id = id };
             var result = await mediator.Send(command);
             return HandleCommand(result);
         }

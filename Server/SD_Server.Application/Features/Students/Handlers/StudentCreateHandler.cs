@@ -1,6 +1,8 @@
+using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SD_Server.Application.Features.Students.Commands.Create;
+using SD_Server.Application.Features.Students.DTO;
 using SD_Server.Application.Helpers;
 using SD_Server.Domain.Base;
 using SD_Server.Domain.Enum;
@@ -9,7 +11,6 @@ using SD_Server.Domain.Features.Students;
 using SD_Server.Domain.Features.Users;
 using SD_SharedKernel.Helpers;
 using BC = BCrypt.Net.BCrypt;
-using Unit = SD_SharedKernel.Helpers.Unit;
 
 namespace SD_Server.Application.Features.Students.Handlers
 {
@@ -20,9 +21,10 @@ namespace SD_Server.Application.Features.Students.Handlers
             IStudentRepository repository,
             IUserRepository userRepository,
             IStudentProfissionalRepository studentProfissionalRepository,
-            IUnitOfWork unitOfWork) : IRequestHandler<StudentCreateCommand, Result<Exception, Unit>>
+            IUnitOfWork unitOfWork,
+            IMapper mapper) : IRequestHandler<StudentCreateCommand, Result<Exception, StudentDTO>>
         {
-            public async Task<Result<Exception, Unit>> Handle(StudentCreateCommand request, CancellationToken cancellationToken)
+            public async Task<Result<Exception, StudentDTO>> Handle(StudentCreateCommand request, CancellationToken cancellationToken)
             {
                 logger.LogInformation("Iniciando o processo de criação do aluno com o nome: {Name}", request.Name);
 
@@ -76,12 +78,12 @@ namespace SD_Server.Application.Features.Students.Handlers
 
                     if (request.ProfessionalId.HasValue)
                     {
-                        var createStudentProfessionalResult =  await studentProfissionalRepository.AddAsync(new StudentProfessional()
+                        var createStudentProfessionalResult = await studentProfissionalRepository.AddAsync(new StudentProfessional()
                         {
                             StudentId = createStudentResult.Success,
                             ProfessionalId = request.ProfessionalId.Value,
-                            LinkedAt =  DateTime.UtcNow,
-                            Status =  StatusEnum.Active
+                            LinkedAt = DateTime.UtcNow,
+                            Status = StatusEnum.Active
                         });
 
                         if (createStudentProfessionalResult.IsFailure)
@@ -90,12 +92,16 @@ namespace SD_Server.Application.Features.Students.Handlers
                             return createStudentProfessionalResult.Failure;
                         }
                     }
-                    
+
                     await unitOfWork.CommitAsync(cancellationToken);
 
                     logger.LogInformation("Usuário criado com sucesso. Id: {Id}", createUserResult.Success);
 
-                    return Unit.Sucessful;
+                    var studentResult = await repository.GetByIdAsync(createStudentResult.Success);
+                    if (studentResult.IsFailure)
+                        return new Exception("Erro ao recuperar aluno criado.");
+
+                    return mapper.Map<StudentDTO>(studentResult.Success);
                 }
                 catch (Exception ex)
                 {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, switchMap } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { AlunoModel } from '../models/aluno.model';
 import { environment } from '../../../environment';
 import { HttpClient } from '@angular/common/http';
@@ -28,9 +28,7 @@ export class AlunoDataSource {
   }
 
   create(aluno: Omit<AlunoModel, 'id'>): Observable<AlunoModel> {
-    return this.http.post<void>(`${this.apiUrl}/Create`, aluno).pipe(
-      map(() => ({ ...aluno, id: 0 } as AlunoModel))
-    );
+    return this.http.post<AlunoModel>(`${this.apiUrl}/Create`, aluno);
   }
 
   update(id: number, aluno: Partial<AlunoModel>): Observable<AlunoModel> {

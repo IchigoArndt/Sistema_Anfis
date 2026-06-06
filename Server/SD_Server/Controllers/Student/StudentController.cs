@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SD_Api_Base.Base;
+using SD_Server.Application.Features.Students.Commands.Activate;
 using SD_Server.Application.Features.Students.Commands.Create;
 using SD_Server.Application.Features.Students.Commands.Delete;
 using SD_Server.Application.Features.Students.Commands.Detail;
@@ -43,7 +44,10 @@ namespace SD_Server.Api.Controllers.Student
             
             var result = await mediator.Send(request);
 
-            return HandleCommand(result);
+            if (result.IsFailure)
+                return HandleCommand(result);
+
+            return CreatedAtAction(nameof(GetById), new { id = result.Success.Id }, result.Success);
         }
 
         [HttpGet("GetAll")]
@@ -106,6 +110,15 @@ namespace SD_Server.Api.Controllers.Student
                 
             var response = await mediator.Send(query);
 
+            return HandleCommand(response);
+        }
+
+        [HttpPut("ActivateStudent/{id}")]
+        [Authorize(Roles = "Admin,Professional")]
+        public async Task<IActionResult> ActivateStudent(int id)
+        {
+            var command = new ActivateStudentCommand { Id = id };
+            var response = await mediator.Send(command);
             return HandleCommand(response);
         }
     }

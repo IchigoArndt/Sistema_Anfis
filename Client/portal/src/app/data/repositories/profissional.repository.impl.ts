@@ -3,7 +3,7 @@ import { Observable, map } from 'rxjs';
 import { Profissional } from '../../domain/entities/profissional.entity';
 import { ProfissionalRepository } from '../../domain/repositories/profissional.repository';
 import { ProfissionalDataSource } from '../datasources/profissional.datasource';
-import { toProfissionalEntity, toProfissionalModel } from '../models/profissional.model';
+import { toProfissionalEntity, toProfissionalModel, ProfissionalModel } from '../models/profissional.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfissionalRepositoryImpl extends ProfissionalRepository {
@@ -31,5 +31,19 @@ export class ProfissionalRepositoryImpl extends ProfissionalRepository {
 
   delete(id: number): Observable<void> {
     return this.dataSource.delete(id);
+  }
+
+  update(id: number, profissional: Partial<Profissional>): Observable<Profissional> {
+    const model: Partial<ProfissionalModel> = {
+      name: profissional.nome,
+      email: profissional.email,
+      phone: profissional.telefone,
+      bio: profissional.bio,
+      specialty: profissional.specialty,
+      methodology: profissional.methodology,
+      price: profissional.price,
+      experience: profissional.experience,
+    };
+    return this.dataSource.update(id, model).pipe(map(toProfissionalEntity));
   }
 }

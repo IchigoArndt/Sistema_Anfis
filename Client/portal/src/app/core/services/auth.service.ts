@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../../environment';
 
 const TOKEN_KEY = 'token';
 
@@ -17,10 +18,9 @@ export class AuthService {
   ) {}
 
   login(email: string, password: string): Observable<boolean> {
-    // TODO: substituir pela URL real da API de auth
-    const loginUrl = 'https://localhost:7289/auth/login'; // Ajustar conforme necessário
+    const loginUrl = `${environment.authUrl}/Auth/Login`;
 
-    return this.http.post<{ token: string }>(loginUrl, { email, password }).pipe(
+    return this.http.post<{ token: string; expiration: string }>(loginUrl, { email, password }).pipe(
       map(response => {
         this._isAuthenticated = true;
         this._token = response.token;
@@ -40,16 +40,35 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
+    if (this.isTokenExpired()) {
+      this.clearAuthState();
+      return false;
+    }
     return this._isAuthenticated || !!this._token || !!this.getToken();
+  }
+
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return true;
+      const payload = JSON.parse(atob(parts[1]));
+      const exp = payload['exp'];
+      if (!exp) return false;
+      return Math.floor(Date.now() / 1000) >= exp;
+    } catch {
+      return true;
+    }
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
   }
 
   private setToken(token: string): void {
     localStorage.setItem(TOKEN_KEY, token);
     sessionStorage.removeItem(TOKEN_KEY);
-  }
-
-  private getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
   }
 
   private clearAuthState(): void {

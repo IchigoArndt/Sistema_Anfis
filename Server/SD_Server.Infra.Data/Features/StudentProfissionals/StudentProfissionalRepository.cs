@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SD_Server.Domain.Enum;
 using SD_Server.Domain.Features.StudentProfessionals;
 using SD_Server.Domain.Features.Students;
 using SD_Server.Infra.Data.Context;
@@ -24,22 +25,52 @@ public class StudentProfissionalRepository(SdServerDbContext context) : IStudent
 
     public Task<Result<Exception, IQueryable<StudentProfessional>>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return Task.FromResult(
+            Result<Exception, IQueryable<StudentProfessional>>.Of(
+                context.StudentProfessionals.AsNoTracking().AsQueryable()));
     }
 
-    public Task<Result<Exception, StudentProfessional>> GetByIdAsync(int id)
+    public async Task<Result<Exception, StudentProfessional>> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        var entity = await context.StudentProfessionals.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id);
+        if (entity is null)
+            return new KeyNotFoundException($"Vínculo {id} não encontrado.");
+        return entity;
     }
 
-    public Task<Result<Exception, Unit>> UpdateAsync(StudentProfessional entity)
+    public async Task<Result<Exception, Unit>> UpdateAsync(StudentProfessional entity)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var existing = await context.StudentProfessionals.FirstOrDefaultAsync(x => x.Id == entity.Id);
+            if (existing is null)
+                return new KeyNotFoundException($"Vínculo {entity.Id} não encontrado.");
+            existing.Status = entity.Status;
+            await context.SaveChangesAsync();
+            return Unit.Sucessful;
+        }
+        catch (Exception ex)
+        {
+            return new Exception($"Erro ao atualizar vínculo: {ex.Message}", ex);
+        }
     }
 
-    public Task<Result<Exception, Unit>> DeleteAsync(StudentProfessional entity)
+    public async Task<Result<Exception, Unit>> DeleteAsync(StudentProfessional entity)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var existing = await context.StudentProfessionals.FirstOrDefaultAsync(x => x.Id == entity.Id);
+            if (existing is null)
+                return new KeyNotFoundException($"Vínculo {entity.Id} não encontrado.");
+            existing.Status = StatusEnum.Inactive;
+            await context.SaveChangesAsync();
+            return Unit.Sucessful;
+        }
+        catch (Exception ex)
+        {
+            return new Exception($"Erro ao excluir vínculo: {ex.Message}", ex);
+        }
     }
 
     public Task<Result<Exception, IQueryable<Student>>> GetAllUserIdByProfessionalId(int professionalId)
