@@ -19,4 +19,8 @@
     <ProjectReference Include="..\SD_SharedKernel\SD_SharedKernel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Avaliations\DTO\" />
+  </ItemGroup>
+
 </Project>

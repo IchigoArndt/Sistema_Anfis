@@ -6,9 +6,11 @@ import 'package:sistema_distribuido/core/features/profissionais/presentation/pro
 import 'package:sistema_distribuido/core/features/avaliacoes/presentation/avaliacoes_presenter.dart';
 import 'package:sistema_distribuido/core/shared/di/service_locator.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await setupServiceLocator();
+  await setupServiceLocator(navigatorKey);
   runApp(const MyApp());
 }
 
@@ -19,6 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Sistema Distribuído',
+      navigatorKey: navigatorKey,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),

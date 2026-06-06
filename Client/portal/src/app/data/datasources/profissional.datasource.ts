@@ -10,6 +10,10 @@ export class ProfissionalDataSource {
 
   constructor(private http: HttpClient) {}
 
+  getMe(): Observable<ProfissionalModel> {
+    return this.http.get<ProfissionalModel>(`${this.apiUrl}/GetMe`);
+  }
+
   getAll(): Observable<ProfissionalModel[]> {
     return this.http.get<ProfissionalModel[]>(`${this.apiUrl}/GetAll`);
   }
@@ -24,5 +28,9 @@ export class ProfissionalDataSource {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/Delete/${id}`);
+  }
+
+  update(id: number, profissional: Partial<ProfissionalModel>): Observable<ProfissionalModel> {
+    return this.http.put<ProfissionalModel>(`${this.apiUrl}/Update/${id}`, profissional);
   }
 }

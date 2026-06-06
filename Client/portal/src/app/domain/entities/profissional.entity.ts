@@ -7,4 +7,8 @@ export interface Profissional {
   bio?: string;
   status?: 'Ativo' | 'Inativo';
   senha?: string;
+  specialty?: string;
+  methodology?: string;
+  price?: number;
+  experience?: string;
 }

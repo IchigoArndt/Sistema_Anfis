@@ -9,6 +9,10 @@ export interface ProfissionalModel {
   bio?: string;
   status?: number;
   password?: string;
+  specialty?: string;
+  methodology?: string;
+  price?: number;
+  experience?: string;
 }
 
 export function toProfissionalEntity(model: ProfissionalModel): Profissional {
@@ -22,6 +26,10 @@ export function toProfissionalEntity(model: ProfissionalModel): Profissional {
     status: model.status !== undefined
       ? (model.status === 1 ? 'Ativo' : 'Inativo')
       : undefined,
+    specialty: model.specialty,
+    methodology: model.methodology,
+    price: model.price,
+    experience: model.experience,
   };
 }
 
@@ -34,5 +42,9 @@ export function toProfissionalModel(entity: Omit<Profissional, 'id'>): Omit<Prof
     bio: entity.bio,
     status: entity.status === 'Ativo' ? 1 : entity.status === 'Inativo' ? 2 : undefined,
     password: entity.senha,
+    specialty: entity.specialty,
+    methodology: entity.methodology,
+    price: entity.price,
+    experience: entity.experience,
   };
 }

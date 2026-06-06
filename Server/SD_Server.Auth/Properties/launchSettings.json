@@ -9,7 +9,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "Secret": "SD_Server_Secret_Key_2026_Facvest_MatrixCompetency_32chars!",
-        "Connection_Sql": "Server=localhost;Database=SistemaDistribuicao;User Id=sa;Password=1234;TrustServerCertificate=True;MultipleActiveResultSets=True;",
+        "Connection_Sql": "Server=localhost;Database=SistemaDistribuicao;User Id=sa;Password=p4ssw0rd!;TrustServerCertificate=True;MultipleActiveResultSets=True;",
         "Connection_Mongo": "mongodb://localhost:27017/LogsSistemaDistribuicao"
       }
     },
@@ -21,7 +21,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "Secret": "SD_Server_Secret_Key_2026_Facvest_MatrixCompetency_32chars!",
-        "Connection_Sql": "Server=localhost;Database=SistemaDistribuicao;User Id=sa;Password=1234;TrustServerCertificate=True;MultipleActiveResultSets=True;",
+        "Connection_Sql": "Server=localhost;Database=SistemaDistribuicao;User Id=sa;Password=p4ssw0rd!;TrustServerCertificate=True;MultipleActiveResultSets=True;",
         "Connection_Mongo": "mongodb://localhost:27017/LogsSistemaDistribuicao"
       }
     }
