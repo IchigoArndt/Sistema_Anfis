@@ -72,6 +72,13 @@ container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 builder.Services.AddDefaultServices<Program>(container);
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var allowedOrigins = new[]
+{
+    "http://localhost:4200",
+    "https://localhost:4200",
+    "http://127.0.0.1:4200",
+    "https://127.0.0.1:4200"
+};
 
 builder.Services.AddCors(options =>
 {
@@ -79,9 +86,9 @@ builder.Services.AddCors(options =>
         name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.AllowAnyOrigin();
-            policy.AllowAnyMethod();
-            policy.AllowAnyHeader();
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
         });
 });
 

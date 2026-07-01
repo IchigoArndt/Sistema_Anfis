@@ -8,7 +8,7 @@
       "applicationUrl": "http://localhost:5252",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Connection_Sql": "Server=localhost;Database=SistemaDistribuicao;User Id=sa;Password=p4ssw0rd!;TrustServerCertificate=True;MultipleActiveResultSets=True;",
+        "Connection_Sql": "Server=localhost;Database=SistemaDistribuicao;User Id=sa;Password=Senha@Forte123;TrustServerCertificate=True;MultipleActiveResultSets=True;",
         "Connection_Mongo": "mongodb://localhost:27017/LogsSistemaDistribuicao"
       }
     },
@@ -19,7 +19,7 @@
       "applicationUrl": "https://localhost:7171;http://localhost:5252",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Connection_Sql": "Server=localhost;Database=SistemaDistribuicao;User Id=sa;Password=p4ssw0rd!;TrustServerCertificate=True;MultipleActiveResultSets=True;",
+        "Connection_Sql": "Server=localhost;Database=SistemaDistribuicao;User Id=sa;Password=Senha@Forte123;TrustServerCertificate=True;MultipleActiveResultSets=True;",
         "Connection_Mongo": "mongodb://localhost:27017/LogsSistemaDistribuicao"
       }
     }
